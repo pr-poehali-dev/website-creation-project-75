@@ -72,9 +72,11 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center font-bold text-xl">
-                FP
-              </div>
+              <img 
+                src="https://cdn.poehali.dev/files/fe405837-efbd-48e5-b423-ff2bbe77ee7a.jpeg" 
+                alt="FunPay" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="text-2xl font-bold">FunPay</span>
             </div>
             <Badge variant="outline" className="text-sm">
